@@ -204,3 +204,10 @@ export async function getImageInfo(
   }
   return imageInfo;
 }
+
+/**
+ * 压缩图片
+ */
+export async function compressImage() {
+  // TODO: 基于 Canvas 压缩图片
+}

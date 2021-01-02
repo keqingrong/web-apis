@@ -1,5 +1,7 @@
 # @keqingrong/web-apis
 
+[![npm version](https://img.shields.io/npm/v/@keqingrong/web-apis.svg)](https://www.npmjs.com/package/@keqingrong/web-apis)
+
 Web APIs
 
 ## Installation
