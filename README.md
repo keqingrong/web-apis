@@ -35,6 +35,9 @@ import { chooseImage } from '@keqingrong/web-apis';
 
 ## APIs
 
+- Device
+  - Phone
+    - `makePhoneCall()`
 - Media
   - Image
     - `getImageInfo()`

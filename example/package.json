@@ -8,6 +8,8 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "antd-mobile": "^2.3.4",
+    "eruda": "^2.4.1",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {

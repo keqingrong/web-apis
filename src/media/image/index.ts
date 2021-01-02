@@ -77,7 +77,6 @@ export function chooseImageFile(options: ChooseImageFileOptions = {}) {
         reject(new Error('chooseImageFile 出错，event.target 缺失'));
       }
       inputElement.removeEventListener('change', handleChange);
-      //inputElement.parentElement.removeChild(inputElement);
     };
     const inputElement = document.createElement('input');
     inputElement.type = 'file';
@@ -89,8 +88,7 @@ export function chooseImageFile(options: ChooseImageFileOptions = {}) {
     inputElement.webkitdirectory = false;
     inputElement.style.display = 'none';
     inputElement.addEventListener('change', handleChange, false);
-    // document.body.appendChild(inputElement);
-    inputElement.click();
+    inputElement.dispatchEvent(new MouseEvent('click'));
   });
 }
 
