@@ -6,7 +6,7 @@ import {
   InputEventTarget
 } from '../../types';
 import { downloadFile } from '../../network/download';
-import { extToMediaType } from '../../utils/image';
+import { extToMediaType } from '../../utils/mime';
 import { readAsDataURL } from '../../utils/blob';
 
 /**

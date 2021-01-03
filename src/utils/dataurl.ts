@@ -1,3 +1,4 @@
+import { checkMime } from './mime';
 import { isDataURL } from './url';
 
 export interface DataURLParsedResult {
@@ -68,4 +69,24 @@ export function dataURLToBlob(url: string) {
  */
 export function dataURLToBlobAsync(url: string) {
   return window.fetch(url).then(res => res.blob());
+}
+
+/**
+ * 将 base64 data 部分字符串转换成 Blob 对象
+ */
+export async function base64ToBlob(base64data: string) {
+  const byteString = atob(base64data);
+  const len = byteString.length;
+  const unicodes: number[] = [];
+  for (let i = 0; i < len; i++) {
+    unicodes.push(byteString.charCodeAt(i));
+  }
+  const bytes = Uint8Array.from(unicodes);
+  const blob = new Blob([bytes]);
+  const mime = await checkMime(blob);
+  if (mime) {
+    return new Blob([blob], { type: mime.type });
+  } else {
+    return blob;
+  }
 }

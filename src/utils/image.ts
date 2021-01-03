@@ -22,23 +22,3 @@ export function imageToBlob(element: HTMLImageElement | HTMLCanvasElement) {
     image.toBlob(blob => resolve(blob));
   });
 }
-
-/**
- * 根据图片后缀返回对应媒体类型，例如 image/webp,image/apng,image/png,image/jpeg,image/gif,image/svg+xml
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
- * @param ext
- */
-export function extToMediaType(ext: string) {
-  const mediaTypeMap = new Map([
-    [/\.ico$/i, 'image/vnd.microsoft.icon'],
-    [/\.jpe?g$/i, 'image/jpeg'],
-    [/\.svg$/i, 'image/svg+xml'],
-    [/\.tiff?$/i, 'image/tiff']
-  ]);
-  for (const [regExp, mediaType] of mediaTypeMap) {
-    if (regExp.test(ext)) {
-      return mediaType;
-    }
-  }
-  return `image/${ext.slice(1).toLowerCase()}`;
-}

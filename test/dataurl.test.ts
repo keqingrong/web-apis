@@ -1,7 +1,8 @@
 import {
   pareseDataURL,
   dataURLToBlob,
-  dataURLToBlobAsync
+  dataURLToBlobAsync,
+  base64ToBlob
 } from '../src/utils/dataurl';
 
 test('pareseDataURL', () => {
@@ -46,6 +47,13 @@ test('pareseDataURL', () => {
 test('dataURLToBlob', () => {
   const blob = dataURLToBlob(
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+  );
+  expect(blob.type).toBe('image/png');
+});
+
+test('base64ToBlob', async () => {
+  const blob = await base64ToBlob(
+    'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
   );
   expect(blob.type).toBe('image/png');
 });
