@@ -1,26 +1,37 @@
 import { downloadFile } from '../network/download';
+import { imageToBlob } from '../utils/image';
 import { basename } from '../utils/path';
+import { isHttpURL } from '../utils/url';
 
 /**
  * 保存文件到本地
- * @param {string | File | Blob} src 文件 URL 或对象
+ * @param {string | File | Blob} src URL 或文件对象
  * @param {string} filename 文件名
  * @returns {Promise<boolean>}
  */
 export async function saveFile(src: string | File | Blob, filename?: string) {
-  let defaultName = '';
+  let defaultName = filename ?? '';
   let file: File | Blob | null = null;
   if (typeof src === 'string') {
-    defaultName = filename ?? basename(src);
+    if (!isHttpURL(src)) {
+      throw new Error(
+        `第一个参数为 URL 或文件对象，若要保存文件内容，请使用 saveTextFile API`
+      );
+    }
+    if (defaultName.length === 0) {
+      defaultName = basename(src);
+    }
     file = await downloadFile(src);
   } else if (src instanceof File) {
-    defaultName = filename ?? src.name;
+    if (defaultName.length === 0) {
+      defaultName = src.name;
+    }
     file = src;
   } else {
+    if (defaultName.length === 0) {
+      defaultName = new Date().getTime().toString(10);
+    }
     file = src;
-  }
-  if (defaultName.length === 0) {
-    defaultName = new Date().getTime().toString(10);
   }
 
   // Microsoft Edge/IE 10+
@@ -53,10 +64,29 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
     return true;
   }
 
-  console.warn(
-    '不支持 IE9 等低版本浏览器和 Safari for iOS、Chrome for iOS 等 iOS 平台浏览器'
-  );
+  // 不支持 IE9 等低版本浏览器和 Safari for iOS、Chrome for iOS 等 iOS 平台浏览器
   throw new Error('该浏览器不支持文件保存');
+}
+
+/**
+ * 保存图片到本地
+ * @param {HTMLImageElement | HTMLCanvasElement} element 图片元素
+ * @param {string} filename 文件名
+ * @returns {Promise<boolean>}
+ */
+export async function saveImage(
+  element: HTMLImageElement | HTMLCanvasElement,
+  filename?: string
+) {
+  if (element instanceof HTMLCanvasElement) {
+    const blob = await imageToBlob(element);
+    if (blob === null) {
+      throw new Error('无法转换成 Blob 对象');
+    }
+    return saveFile(blob, filename);
+  } else {
+    return saveFile(element.src, filename);
+  }
 }
 
 export type JSONValue =
@@ -69,7 +99,7 @@ export type JSONValue =
     }
   | JSONValue[];
 
-export interface SaveJSONFileOptions {
+export interface SaveJSONOptions {
   /** 缩进字符 */
   spaces?: number | string;
   /** EOL 字符 */
@@ -82,19 +112,30 @@ export interface SaveJSONFileOptions {
 }
 
 /**
- * 保存 JSON 文件到本地
+ * 保存 JSON 内容到本地
  * @param {any} json JSON 对象
  * @param {string} filename 文件名
  * @returns {Promise<boolean>}
  */
-export async function saveJSONFile(
+export async function saveJSON(
   json: any,
   filename?: string,
-  options?: SaveJSONFileOptions
+  options?: SaveJSONOptions
 ) {
   const { spaces = 2, replacer = null, EOL = '\n' } = { ...options };
   // TODO: 优化类型定义
   const content = JSON.stringify(json, replacer as any, spaces) + EOL;
   const blob = new Blob([content], { type: 'application/json' });
+  return saveFile(blob, filename);
+}
+
+/**
+ * 保存文本内容到本地
+ * @param {string} content 文本内容
+ * @param {string} filename 文件名
+ * @returns {Promise<boolean>}
+ */
+export async function saveText(content: string, filename?: string) {
+  const blob = new Blob([content], { type: 'application/octet-stream' });
   return saveFile(blob, filename);
 }

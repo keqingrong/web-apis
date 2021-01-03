@@ -53,7 +53,8 @@ import { chooseImage } from '@keqingrong/web-apis';
   - `navigateTo()`
 - File
   - `saveFile()`
-  - `saveJSONFile()`
+  - `saveJSON()`
+  - `saveText()`
 
 ## License
 

@@ -6,6 +6,8 @@ import {
   InputEventTarget
 } from '../../types';
 import { downloadFile } from '../../network/download';
+import { extToMediaType } from '../../utils/image';
+import { readAsDataURL } from '../../utils/blob';
 
 /**
  * 选择图片，返回URL字符串数组
@@ -113,38 +115,6 @@ export function chooseImageDataURL(options: ChooseImageFileOptions = {}) {
       err => reject(err)
     );
   });
-}
-
-/**
- * 将 File 对象处理成 Data URL
- */
-export function readAsDataURL(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = () => reject(new Error('readAsDataURL 处理失败'));
-    reader.readAsDataURL(file);
-  });
-}
-
-/**
- * 根据图片后缀返回对应媒体类型
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
- * @param ext 如 image/webp,image/apng,image/png,image/jpeg,image/gif,image/svg+xml
- */
-export function extToMediaType(ext: string) {
-  const mediaTypeMap = new Map([
-    [/\.ico$/i, 'image/vnd.microsoft.icon'],
-    [/\.jpe?g$/i, 'image/jpeg'],
-    [/\.svg$/i, 'image/svg+xml'],
-    [/\.tiff?$/i, 'image/tiff']
-  ]);
-  for (const [regExp, mediaType] of mediaTypeMap) {
-    if (regExp.test(ext)) {
-      return mediaType;
-    }
-  }
-  return `image/${ext.toLowerCase()}`;
 }
 
 /**
