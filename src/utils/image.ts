@@ -24,7 +24,7 @@ export function imageToBlob(element: HTMLImageElement | HTMLCanvasElement) {
 }
 
 /**
- * 根据图片后缀返回对应媒体类型，支持 image/webp,image/apng,image/png,image/jpeg,image/gif,image/svg+xml
+ * 根据图片后缀返回对应媒体类型，例如 image/webp,image/apng,image/png,image/jpeg,image/gif,image/svg+xml
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
  * @param ext
  */

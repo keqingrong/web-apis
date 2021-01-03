@@ -1,4 +1,8 @@
-import { pareseDataURL, dataURLToBlob } from '../src/utils/dataurl';
+import {
+  pareseDataURL,
+  dataURLToBlob,
+  dataURLToBlobAsync
+} from '../src/utils/dataurl';
 
 test('pareseDataURL', () => {
   expect(pareseDataURL('data:,Hello%2C%20World!')).toEqual({
@@ -41,6 +45,14 @@ test('pareseDataURL', () => {
 
 test('dataURLToBlob', () => {
   const blob = dataURLToBlob(
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+  );
+  expect(blob.type).toBe('image/png');
+});
+
+test('dataURLToBlobAsync', async () => {
+  global.fetch = require('node-fetch');
+  const blob = await dataURLToBlobAsync(
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
   );
   expect(blob.type).toBe('image/png');

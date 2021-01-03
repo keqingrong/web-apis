@@ -51,11 +51,13 @@ export function pareseDataURL(url: string) {
  * 将 Data URL 转换成 Blob 对象
  */
 export function dataURLToBlob(url: string) {
-  const { data = '', mediaType } = pareseDataURL(url);
-  const unicodes = window
-    .atob(data)
-    .split('')
-    .map(char => char.charCodeAt(0));
+  const { data = '', mediaType, base64 } = pareseDataURL(url);
+  const byteString = base64 ? atob(data) : data;
+  const len = byteString.length;
+  const unicodes: number[] = [];
+  for (let i = 0; i < len; i++) {
+    unicodes.push(byteString.charCodeAt(i));
+  }
   const bytes = Uint8Array.from(unicodes);
   const options = mediaType ? { type: mediaType } : undefined;
   return new Blob([bytes], options);
@@ -65,5 +67,5 @@ export function dataURLToBlob(url: string) {
  * 将 Data URL 转换成 Blob 对象
  */
 export function dataURLToBlobAsync(url: string) {
-  return fetch(url).then(res => res.blob());
+  return window.fetch(url).then(res => res.blob());
 }
