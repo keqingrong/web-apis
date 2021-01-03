@@ -35,6 +35,9 @@ import { chooseImage } from '@keqingrong/web-apis';
 
 ## APIs
 
+- Base
+  - `base64ToArrayBuffer()`
+  - `arrayBufferToBase64()`
 - Device
   - Phone
     - `makePhoneCall()`

@@ -75,18 +75,37 @@ export function dataURLToBlobAsync(url: string) {
  * 将 base64 data 部分字符串转换成 Blob 对象
  */
 export async function base64ToBlob(base64data: string) {
-  const byteString = atob(base64data);
-  const len = byteString.length;
-  const unicodes: number[] = [];
-  for (let i = 0; i < len; i++) {
-    unicodes.push(byteString.charCodeAt(i));
-  }
-  const bytes = Uint8Array.from(unicodes);
-  const blob = new Blob([bytes]);
+  const buffer = base64ToArrayBuffer(base64data);
+  const blob = new Blob([buffer]);
   const mime = await checkMime(blob);
   if (mime) {
     return new Blob([blob], { type: mime.type });
   } else {
     return blob;
   }
+}
+
+/**
+ * 将 base64 字符串转换成 ArrayBuffer 对象
+ */
+export function base64ToArrayBuffer(base64: string) {
+  const byteString = atob(base64);
+  const len = byteString.length;
+  const unicodes: number[] = [];
+  for (let i = 0; i < len; i++) {
+    unicodes.push(byteString.charCodeAt(i));
+  }
+  return Uint8Array.from(unicodes);
+}
+
+/**
+ * 将 ArrayBuffer 对象转换成 base64 字符串
+ */
+export function arrayBufferToBase64(arrayBuffer: Uint8Array) {
+  const bytes: string[] = [];
+  const len = arrayBuffer.length;
+  for (let i = 0; i < len; i++) {
+    bytes.push(String.fromCharCode(arrayBuffer[i]));
+  }
+  return btoa(bytes.join(''));
 }
