@@ -1,5 +1,5 @@
 import { downloadFile } from '../network/download';
-import { imageToBlob } from '../utils/image';
+import { createCanvas, imageToBlob } from '../utils/image';
 import { basename } from '../utils/path';
 import { isHttpURL } from '../utils/url';
 
@@ -15,7 +15,7 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
   if (typeof src === 'string') {
     if (!isHttpURL(src)) {
       throw new Error(
-        `第一个参数为 URL 或文件对象，若要保存文件内容，请使用 saveTextFile API`
+        `第一个参数为 URL 或文件对象，若要保存文件内容，请使用 saveText API`
       );
     }
     if (defaultName.length === 0) {
@@ -78,15 +78,19 @@ export async function saveImage(
   element: HTMLImageElement | HTMLCanvasElement,
   filename?: string
 ) {
-  if (element instanceof HTMLCanvasElement) {
-    const blob = await imageToBlob(element);
-    if (blob === null) {
-      throw new Error('无法转换成 Blob 对象');
+  let image = element;
+  if (element instanceof HTMLImageElement) {
+    try {
+      return await saveFile(element.src, filename);
+    } catch (err) {
+      image = createCanvas(element);
     }
-    return saveFile(blob, filename);
-  } else {
-    return saveFile(element.src, filename);
   }
+  const blob = await imageToBlob(image);
+  if (blob === null) {
+    throw new Error('无法转换成 Blob 对象');
+  }
+  return saveFile(blob, filename);
 }
 
 export type JSONValue =

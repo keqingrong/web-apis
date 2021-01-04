@@ -7,7 +7,7 @@ export interface DataURLParsedResult {
   /** 字符集 */
   charset: string | undefined;
   /** data 是否使用 base64 编码 */
-  base64: boolean;
+  isBase64Encoded: boolean;
   /** 数据 */
   data: string | undefined;
 }
@@ -22,7 +22,7 @@ export function pareseDataURL(url: string) {
   const result: DataURLParsedResult = {
     mediaType: undefined,
     charset: undefined,
-    base64: false,
+    isBase64Encoded: false,
     data: undefined
   };
 
@@ -34,7 +34,7 @@ export function pareseDataURL(url: string) {
   result.data = body;
   const parts = header.toLowerCase().split(';');
   if (parts[parts.length - 1] === 'base64') {
-    result.base64 = true;
+    result.isBase64Encoded = true;
     parts.pop();
   }
   if (parts[0] && parts[0].includes('/')) {
@@ -52,16 +52,12 @@ export function pareseDataURL(url: string) {
  * 将 Data URL 转换成 Blob 对象
  */
 export function dataURLToBlob(url: string) {
-  const { data = '', mediaType, base64 } = pareseDataURL(url);
-  const byteString = base64 ? atob(data) : data;
-  const len = byteString.length;
-  const unicodes: number[] = [];
-  for (let i = 0; i < len; i++) {
-    unicodes.push(byteString.charCodeAt(i));
-  }
-  const bytes = Uint8Array.from(unicodes);
+  const { data = '', mediaType, isBase64Encoded } = pareseDataURL(url);
+  const buffer = isBase64Encoded
+    ? base64ToArrayBuffer(data)
+    : stringToArrayBuffer(data);
   const options = mediaType ? { type: mediaType } : undefined;
-  return new Blob([bytes], options);
+  return new Blob([buffer], options);
 }
 
 /**
@@ -72,10 +68,10 @@ export function dataURLToBlobAsync(url: string) {
 }
 
 /**
- * 将 base64 data 部分字符串转换成 Blob 对象
+ * 将 base64 字符串转换成 Blob 对象
  */
-export async function base64ToBlob(base64data: string) {
-  const buffer = base64ToArrayBuffer(base64data);
+export async function base64ToBlob(base64: string) {
+  const buffer = base64ToArrayBuffer(base64);
   const blob = new Blob([buffer]);
   const mime = await checkMime(blob);
   if (mime) {
@@ -89,11 +85,17 @@ export async function base64ToBlob(base64data: string) {
  * 将 base64 字符串转换成 ArrayBuffer 对象
  */
 export function base64ToArrayBuffer(base64: string) {
-  const byteString = atob(base64);
-  const len = byteString.length;
+  return stringToArrayBuffer(atob(base64));
+}
+
+/**
+ * 将字符串转换成 ArrayBuffer 对象
+ */
+export function stringToArrayBuffer(data: string) {
+  const len = data.length;
   const unicodes: number[] = [];
   for (let i = 0; i < len; i++) {
-    unicodes.push(byteString.charCodeAt(i));
+    unicodes.push(data.charCodeAt(i));
   }
   return Uint8Array.from(unicodes);
 }
@@ -102,10 +104,17 @@ export function base64ToArrayBuffer(base64: string) {
  * 将 ArrayBuffer 对象转换成 base64 字符串
  */
 export function arrayBufferToBase64(arrayBuffer: Uint8Array) {
+  return btoa(arrayBufferToString(arrayBuffer));
+}
+
+/**
+ * 将 ArrayBuffer 对象转换成字符串
+ */
+export function arrayBufferToString(arrayBuffer: Uint8Array) {
   const bytes: string[] = [];
   const len = arrayBuffer.length;
   for (let i = 0; i < len; i++) {
     bytes.push(String.fromCharCode(arrayBuffer[i]));
   }
-  return btoa(bytes.join(''));
+  return bytes.join('');
 }
