@@ -40,6 +40,30 @@ export function readAsText(file: Blob | File, encoding?: string) {
   });
 }
 
+/**
+ * 将 ArrayBuffer 对象转换成字符串
+ */
+export function arrayBufferToString(arrayBuffer: Uint8Array) {
+  const bytes: string[] = [];
+  const len = arrayBuffer.length;
+  for (let i = 0; i < len; i++) {
+    bytes.push(String.fromCharCode(arrayBuffer[i]));
+  }
+  return bytes.join('');
+}
+
+/**
+ * 将字符串转换成 ArrayBuffer 对象
+ */
+export function stringToArrayBuffer(data: string) {
+  const len = data.length;
+  const unicodes: number[] = [];
+  for (let i = 0; i < len; i++) {
+    unicodes.push(data.charCodeAt(i));
+  }
+  return Uint8Array.from(unicodes);
+}
+
 export {
   readAsArrayBuffer as blobToArrayBuffer,
   readAsDataURL as blobToDataURL,

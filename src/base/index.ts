@@ -1,1 +1,1 @@
-export { base64ToArrayBuffer, arrayBufferToBase64 } from '../utils/dataurl';
+export { base64ToArrayBuffer, arrayBufferToBase64 } from '../utils/base64';

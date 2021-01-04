@@ -1,4 +1,5 @@
-import { checkMime } from './mime';
+import { base64ToArrayBuffer } from './base64';
+import { stringToArrayBuffer } from './blob';
 import { isDataURL } from './url';
 
 export interface DataURLParsedResult {
@@ -65,56 +66,4 @@ export function dataURLToBlob(url: string) {
  */
 export function dataURLToBlobAsync(url: string) {
   return window.fetch(url).then(res => res.blob());
-}
-
-/**
- * 将 base64 字符串转换成 Blob 对象
- */
-export async function base64ToBlob(base64: string) {
-  const buffer = base64ToArrayBuffer(base64);
-  const blob = new Blob([buffer]);
-  const mime = await checkMime(blob);
-  if (mime) {
-    return new Blob([blob], { type: mime.type });
-  } else {
-    return blob;
-  }
-}
-
-/**
- * 将 base64 字符串转换成 ArrayBuffer 对象
- */
-export function base64ToArrayBuffer(base64: string) {
-  return stringToArrayBuffer(atob(base64));
-}
-
-/**
- * 将字符串转换成 ArrayBuffer 对象
- */
-export function stringToArrayBuffer(data: string) {
-  const len = data.length;
-  const unicodes: number[] = [];
-  for (let i = 0; i < len; i++) {
-    unicodes.push(data.charCodeAt(i));
-  }
-  return Uint8Array.from(unicodes);
-}
-
-/**
- * 将 ArrayBuffer 对象转换成 base64 字符串
- */
-export function arrayBufferToBase64(arrayBuffer: Uint8Array) {
-  return btoa(arrayBufferToString(arrayBuffer));
-}
-
-/**
- * 将 ArrayBuffer 对象转换成字符串
- */
-export function arrayBufferToString(arrayBuffer: Uint8Array) {
-  const bytes: string[] = [];
-  const len = arrayBuffer.length;
-  for (let i = 0; i < len; i++) {
-    bytes.push(String.fromCharCode(arrayBuffer[i]));
-  }
-  return bytes.join('');
 }
