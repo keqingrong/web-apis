@@ -1,4 +1,4 @@
-import { arrayBufferToString, stringToArrayBuffer } from './blob';
+import { arrayBufferToString, stringToTypedArrayLegacy } from './blob';
 import { checkMime } from './mime';
 
 /**
@@ -12,7 +12,7 @@ export function arrayBufferToBase64(arrayBuffer: Uint8Array) {
  * 将 base64 字符串转换成 ArrayBuffer 对象
  */
 export function base64ToArrayBuffer(base64: string) {
-  return stringToArrayBuffer(atob(base64));
+  return stringToTypedArrayLegacy(atob(base64));
 }
 
 /**

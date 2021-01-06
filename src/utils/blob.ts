@@ -44,6 +44,7 @@ export function readAsText(file: Blob | File, encoding?: string) {
  * 将 ArrayBuffer 对象转换成字符串
  */
 export function arrayBufferToString(arrayBuffer: Uint8Array) {
+  // TODO: 除了 Uint8Array ，应该真正完整支持 ArrayBuffer
   const bytes: string[] = [];
   const len = arrayBuffer.length;
   for (let i = 0; i < len; i++) {
@@ -53,13 +54,65 @@ export function arrayBufferToString(arrayBuffer: Uint8Array) {
 }
 
 /**
- * 将字符串转换成 ArrayBuffer 对象
+ * 将字符串转换成 ArrayBuffer 对象，基于 `charCodeAt`
+ */
+export function stringToArrayBufferLegacy(data: string) {
+  return stringToTypedArrayLegacy(data).buffer;
+}
+
+/**
+ * 将字符串转换成 ArrayBuffer 对象，基于 `codePointAt`
  */
 export function stringToArrayBuffer(data: string) {
+  return stringToTypedArray(data).buffer;
+}
+
+/**
+ * 将字符串转换成 TypedArray 对象，基于 `charCodeAt`
+ */
+export function stringToTypedArrayLegacy(data: string) {
   const len = data.length;
   const unicodes: number[] = [];
   for (let i = 0; i < len; i++) {
+    // [0, 65535]
     unicodes.push(data.charCodeAt(i));
+  }
+  if (unicodes.length > 0) {
+    if (unicodes.every(unicode => unicode < 2 ** 8)) {
+      // 255 (0xFF)
+      return Uint8Array.from(unicodes);
+    } else {
+      // 65535 (0xFFFF)
+      return Uint16Array.from(unicodes);
+    }
+  }
+  return Uint8Array.from(unicodes);
+}
+
+/**
+ * 将字符串转换成 TypedArray 对象，基于 `codePointAt`
+ */
+export function stringToTypedArray(data: string) {
+  const unicodes: number[] = [];
+  for (let char of data) {
+    const value = char.codePointAt(0);
+    if (value !== undefined) {
+      unicodes.push(value);
+    }
+  }
+  if (unicodes.length > 0) {
+    if (unicodes.every(unicode => unicode < 2 ** 8)) {
+      // 255 (0xFF)
+      return Uint8Array.from(unicodes);
+    } else if (unicodes.every(unicode => unicode < 2 ** 16)) {
+      // 65535 (0xFFFF)
+      return Uint16Array.from(unicodes);
+    } else if (unicodes.every(unicode => unicode < 2 ** 32)) {
+      // 4294967295 (0xFFFFFFFF)
+      return Uint32Array.from(unicodes);
+    } else {
+      return BigUint64Array.from(unicodes.map(unicode => BigInt(unicode)));
+    }
   }
   return Uint8Array.from(unicodes);
 }
