@@ -27,6 +27,8 @@ export function readAsDataURL(file: Blob | File) {
 
 /**
  * 将 Blob 或 File 对象处理成字符串
+ * @param file 文件
+ * @param encoding 文本编码，如 `UTF-8`
  */
 export function readAsText(file: Blob | File, encoding?: string) {
   if ('text' in Blob.prototype) {
@@ -38,6 +40,50 @@ export function readAsText(file: Blob | File, encoding?: string) {
     reader.onerror = () => reject(new Error('readAsText 处理失败'));
     reader.readAsText(file, encoding);
   });
+}
+
+/**
+ * Latin1 字符串转 TypedArray
+ */
+export function latin1ToTypedArray(str: string) {
+  const arr = new Uint8Array(str.length);
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = str.charCodeAt(i);
+  }
+  return arr;
+}
+
+/**
+ * UTF-16 字符串转 TypedArray
+ */
+export function utf16ToTypedArray(str: string) {
+  const arr = new Uint16Array(str.length);
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = str.charCodeAt(i);
+  }
+  return arr;
+}
+
+/**
+ * 字符串转 TypedArray
+ */
+export function stringToTypedArray(str: string) {
+  const minUint16Value = 2 ** 8;
+  const len = str.length;
+  const buffer = new ArrayBuffer(len * 2);
+  let view: Uint8Array | Uint16Array = new Uint8Array(buffer);
+  let hasExtend = false;
+  for (let i = 0; i < len; i++) {
+    let code = str.charCodeAt(i);
+    if (!hasExtend && code >= minUint16Value && view instanceof Uint8Array) {
+      hasExtend = true;
+      let viewExtend = new Uint16Array(buffer);
+      viewExtend.set(view.subarray(0, i), 0);
+      view = viewExtend;
+    }
+    view[i] = code;
+  }
+  return view;
 }
 
 /**
@@ -56,21 +102,21 @@ export function arrayBufferToString(arrayBuffer: Uint8Array) {
 /**
  * 将字符串转换成 ArrayBuffer 对象，基于 `charCodeAt`
  */
-export function stringToArrayBufferLegacy(data: string) {
-  return stringToTypedArrayLegacy(data).buffer;
+export function stringToArrayBufferExperimental1(data: string) {
+  return stringToTypedArrayExperimental1(data).buffer;
 }
 
 /**
  * 将字符串转换成 ArrayBuffer 对象，基于 `codePointAt`
  */
-export function stringToArrayBuffer(data: string) {
-  return stringToTypedArray(data).buffer;
+export function stringToArrayBufferExperimental2(data: string) {
+  return stringToTypedArrayExperimental2(data).buffer;
 }
 
 /**
  * 将字符串转换成 TypedArray 对象，基于 `charCodeAt`
  */
-export function stringToTypedArrayLegacy(data: string) {
+export function stringToTypedArrayExperimental1(data: string) {
   const len = data.length;
   const unicodes: number[] = [];
   for (let i = 0; i < len; i++) {
@@ -92,7 +138,7 @@ export function stringToTypedArrayLegacy(data: string) {
 /**
  * 将字符串转换成 TypedArray 对象，基于 `codePointAt`
  */
-export function stringToTypedArray(data: string) {
+export function stringToTypedArrayExperimental2(data: string) {
   const unicodes: number[] = [];
   for (let char of data) {
     const value = char.codePointAt(0);

@@ -1,5 +1,5 @@
 import { base64ToArrayBuffer } from './base64';
-import { stringToTypedArrayLegacy } from './blob';
+import { latin1ToTypedArray } from './blob';
 import { isDataURL } from './url';
 
 export interface DataURLParsedResult {
@@ -54,9 +54,8 @@ export function pareseDataURL(url: string) {
  */
 export function dataURLToArrayBuffer(url: string) {
   const { data = '', isBase64Encoded } = pareseDataURL(url);
-  return isBase64Encoded
-    ? base64ToArrayBuffer(data)
-    : stringToTypedArrayLegacy(data);
+  // TODO: 非 base64 是否需要 URL 转码？
+  return isBase64Encoded ? base64ToArrayBuffer(data) : latin1ToTypedArray(data);
 }
 
 /**
@@ -64,9 +63,10 @@ export function dataURLToArrayBuffer(url: string) {
  */
 export function dataURLToBlob(url: string) {
   const { data = '', mediaType, isBase64Encoded } = pareseDataURL(url);
+  // TODO: 非 base64 是否需要 URL 转码？
   const buffer = isBase64Encoded
     ? base64ToArrayBuffer(data)
-    : stringToTypedArrayLegacy(data);
+    : latin1ToTypedArray(data);
   const options = mediaType ? { type: mediaType } : undefined;
   return new Blob([buffer], options);
 }

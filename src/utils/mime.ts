@@ -6,8 +6,21 @@ export interface MimePattern {
   ext: string;
 }
 
-// https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
-export const patterns: MimePattern[] = [
+/**
+ * https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
+ * - [x] ico
+ * - [x] cur
+ * - [x] bmp
+ * - [x] gif
+ * - [x] webp
+ * - [x] png
+ * - [x] jpg
+ * - [ ] apng
+ * - [x] avif
+ * - [ ] svg
+ * - [x] tiff
+ */
+export const imagePatterns: MimePattern[] = [
   {
     bytePattern: [0x00, 0x00, 0x01, 0x00],
     type: 'image/x-icon',
@@ -62,13 +75,47 @@ export const patterns: MimePattern[] = [
     bytePattern: [0xff, 0xd8, 0xff],
     type: 'image/jpeg',
     ext: '.jpg'
+  },
+  {
+    bytePattern: [0x49, 0x49], // "II" (little endian)
+    type: 'image/tiff',
+    ext: '.tiff'
+  },
+  {
+    bytePattern: [0x4d, 0x4d], // "MM" (big endian)
+    type: 'image/tiff',
+    ext: '.tiff'
+  },
+  {
+    bytePattern: [], // TODO: isAVIF
+    type: 'image/avif',
+    ext: '.avif'
   }
 ];
 
-function isEqual<T>(array1: Array<T>, array2: Array<T>) {
+/**
+ * 判断两个数组是否相等
+ * @param array1
+ * @param array2
+ */
+export function isEqual<T>(array1: Array<T>, array2: Array<T>) {
   return (
-    array1.length === array2.length && array1.every(val => array2.includes(val))
+    array1.length === array2.length &&
+    array1.every((val, index) => array2[index] === val)
   );
+}
+
+/**
+ * 判断是否是 AVIF 格式
+ * @param blob
+ */
+export async function isAVIF(blob: Blob) {
+  const header = blob.slice(0, 24);
+  const buffer = await readAsArrayBuffer(header);
+  return Array.from(new Uint8Array(buffer))
+    .map(value => String.fromCharCode(value))
+    .join('')
+    .includes('avif');
 }
 
 /**
@@ -76,12 +123,20 @@ function isEqual<T>(array1: Array<T>, array2: Array<T>) {
  * @param blob
  */
 export async function checkMime(blob: Blob): Promise<MimePattern | undefined> {
-  for (let pattern of patterns) {
-    const header = blob.slice(0, pattern.bytePattern.length);
-    const buffer = await readAsArrayBuffer(header);
-    const array = Array.from(new Uint8Array(buffer));
-    if (isEqual(array, pattern.bytePattern)) {
-      return pattern;
+  for (let pattern of imagePatterns) {
+    if (pattern.bytePattern.length > 0) {
+      const header = blob.slice(0, pattern.bytePattern.length);
+      const buffer = await readAsArrayBuffer(header);
+      const array = Array.from(new Uint8Array(buffer));
+      if (isEqual(array, pattern.bytePattern)) {
+        return pattern;
+      }
+    } else {
+      //  TODO: 完善其他图片类型处理
+      const avif = await isAVIF(blob);
+      if (avif) {
+        return imagePatterns.find(item => item.ext === '.avif');
+      }
     }
   }
   return undefined;
