@@ -58,6 +58,23 @@ import { chooseImage } from '@keqingrong/web-apis';
   - `saveFile()`
   - `saveJSON()`
   - `saveText()`
+- Internal Utils
+  - `arrayBufferToBase64()`
+  - `base64ToTypedArray()`
+  - `base64ToArrayBuffer()`
+  - `base64ToBlob()`
+  - `blobToArrayBuffer()`/`readAsArrayBuffer()`
+  - `blobToDataURL()`/`readAsDataURL()`
+  - `blobToText()`/`readAsText()`
+  - `latin1ToTypedArray()`
+  - `utf16ToTypedArray()`
+  - `stringToTypedArray()`
+  - `arrayBufferToString()`
+  - `pareseDataURL()`
+  - `dataURLToArrayBuffer()`
+  - `dataURLToBlob()`
+  - `dataURLToImageData()`
+  - `imageToBlob()`
 
 ## License
 
