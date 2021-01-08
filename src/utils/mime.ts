@@ -1,9 +1,14 @@
-import { readAsArrayBuffer } from './blob';
+import { readAsArrayBuffer, readAsText } from './blob';
 
 export interface MimePattern {
-  bytePattern: number[];
+  /** 字节模式 */
+  bytePattern: number[] | null;
+  /** MIME 类型 */
   type: string;
+  /** 后缀 */
   ext: string;
+  /** 匹配函数 */
+  test?: (blob: Blob) => Promise<boolean> | boolean;
 }
 
 /**
@@ -15,10 +20,10 @@ export interface MimePattern {
  * - [x] webp
  * - [x] png
  * - [x] jpg
- * - [ ] apng
- * - [x] avif
- * - [ ] svg
  * - [x] tiff
+ * - [x] svg
+ * - [x] avif
+ * - [ ] apng
  */
 export const imagePatterns: MimePattern[] = [
   {
@@ -87,9 +92,16 @@ export const imagePatterns: MimePattern[] = [
     ext: '.tiff'
   },
   {
-    bytePattern: [], // TODO: isAVIF
+    bytePattern: null,
     type: 'image/avif',
-    ext: '.avif'
+    ext: '.avif',
+    test: isAVIF
+  },
+  {
+    bytePattern: null,
+    type: 'image/svg+xml',
+    ext: '.svg',
+    test: isSVG
   }
 ];
 
@@ -106,16 +118,26 @@ export function isEqual<T>(array1: Array<T>, array2: Array<T>) {
 }
 
 /**
- * 判断是否是 AVIF 格式
- * @param blob
+ * 判断 Blob 是否是 AVIF 图片
+ *
+ * `[0, 0, 0, 28, 102, 116, 121, 112, 109, 105, 102, 49,
+ *   0, 0, 0, 0, 109, 105, 102, 49, 97, 118, 105, 102]`
+ * => "   ftypmif1    mif1avif"
  */
-export async function isAVIF(blob: Blob) {
+async function isAVIF(blob: Blob) {
   const header = blob.slice(0, 24);
-  const buffer = await readAsArrayBuffer(header);
-  return Array.from(new Uint8Array(buffer))
-    .map(value => String.fromCharCode(value))
-    .join('')
-    .includes('avif');
+  const headerText = await readAsText(header);
+  return headerText.includes('avif');
+}
+
+/**
+ * 判断 Blob 是否是 SVG 图片
+ */
+async function isSVG(blob: Blob) {
+  const text = await readAsText(blob);
+  const container = document.createElement('div');
+  container.innerHTML = text;
+  return container.firstElementChild?.nodeName === 'svg';
 }
 
 /**
@@ -123,19 +145,21 @@ export async function isAVIF(blob: Blob) {
  * @param blob
  */
 export async function checkMime(blob: Blob): Promise<MimePattern | undefined> {
+  //  TODO: 完善其他图片类型处理
   for (let pattern of imagePatterns) {
-    if (pattern.bytePattern.length > 0) {
+    if (Array.isArray(pattern.bytePattern)) {
       const header = blob.slice(0, pattern.bytePattern.length);
       const buffer = await readAsArrayBuffer(header);
       const array = Array.from(new Uint8Array(buffer));
       if (isEqual(array, pattern.bytePattern)) {
         return pattern;
       }
-    } else {
-      //  TODO: 完善其他图片类型处理
-      const avif = await isAVIF(blob);
-      if (avif) {
-        return imagePatterns.find(item => item.ext === '.avif');
+    }
+
+    if (typeof pattern.test === 'function') {
+      const res = await pattern.test(blob);
+      if (res) {
+        return pattern;
       }
     }
   }
@@ -143,17 +167,19 @@ export async function checkMime(blob: Blob): Promise<MimePattern | undefined> {
 }
 
 /**
- * 根据图片后缀返回对应媒体类型，例如 image/webp,image/apng,image/png,image/jpeg,image/gif,image/svg+xml,image/bmp
+ * 根据图片后缀返回对应媒体类型
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
  * @param ext
  */
 export function extToMediaType(ext: string): string {
+  // mage/vnd.microsoft.icon,image/jpeg,image/svg+xml,image/tiff
   const mediaTypeMap = new Map([
     [/\.ico$/i, 'image/vnd.microsoft.icon'],
     [/\.jpe?g$/i, 'image/jpeg'],
     [/\.svg$/i, 'image/svg+xml'],
     [/\.tiff?$/i, 'image/tiff']
   ]);
+  // image/avif,image/webp,image/apng,image/png,image/gif,image/bmp
   for (const [regExp, mediaType] of mediaTypeMap) {
     if (regExp.test(ext)) {
       return mediaType;
