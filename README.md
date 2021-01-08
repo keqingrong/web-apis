@@ -1,4 +1,4 @@
-# @keqingrong/web-apis
+# @keqingrong/web-apis (WIP)
 
 [![npm version](https://img.shields.io/npm/v/@keqingrong/web-apis.svg)](https://www.npmjs.com/package/@keqingrong/web-apis)
 
@@ -17,19 +17,14 @@ yarn add @keqingrong/web-apis
 ## Usage
 
 ```ts
-import { chooseImage } from '@keqingrong/web-apis';
+import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
 
 (async () => {
-  // 上传单张图片
   const [imageUrl] = await chooseImage({
     url: 'http://api.example.com/upload/image'
   });
 
-  // 上传多张图片
-  const imageUrls = await chooseImage({
-    url: 'http://api.example.com/upload/image',
-    count: 5
-  });
+  const { width, height, type } = await getImageInfo(imageUrl);
 })();
 ```
 
