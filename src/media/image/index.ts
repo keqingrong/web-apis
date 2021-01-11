@@ -8,6 +8,7 @@ import {
 import { downloadFile } from '../../network/download';
 import { extToMediaType } from '../../utils/mime';
 import { readAsDataURL } from '../../utils/blob';
+import { isiOS } from '../../utils/ua';
 
 /**
  * 选择图片，返回URL字符串数组
@@ -71,6 +72,7 @@ export function chooseImage(options: ChooseImageOptions) {
  */
 export function chooseImageFile(options: ChooseImageFileOptions = {}) {
   return new Promise<File[]>((resolve, reject) => {
+    const inputElement = document.createElement('input');
     const handleChange = (event: Event) => {
       if (event.target) {
         const target = event.target as InputEventTarget;
@@ -79,8 +81,8 @@ export function chooseImageFile(options: ChooseImageFileOptions = {}) {
         reject(new Error('chooseImageFile 出错，event.target 缺失'));
       }
       inputElement.removeEventListener('change', handleChange);
+      inputElement.parentElement?.removeChild(inputElement);
     };
-    const inputElement = document.createElement('input');
     inputElement.type = 'file';
     inputElement.accept = 'image/*';
     if (options.multiple) {
@@ -90,6 +92,10 @@ export function chooseImageFile(options: ChooseImageFileOptions = {}) {
     inputElement.webkitdirectory = false;
     inputElement.style.display = 'none';
     inputElement.addEventListener('change', handleChange, false);
+    if (isiOS()) {
+      // iOS 上如果不将元素插入到页面中，虽然会触发相册/相机/文件选择，但不响应 `change` 事件。
+      document.body.appendChild(inputElement);
+    }
     inputElement.dispatchEvent(new MouseEvent('click'));
   });
 }
