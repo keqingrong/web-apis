@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.3.0 (2021-02-02)
+
+1. Add new APIs
+2. Fix `input[type=file]` change event not working on iOS
+
 ## v0.2.0 (2021-01-08)
 
 1. Add new APIs and examples

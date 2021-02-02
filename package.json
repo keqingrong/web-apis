@@ -1,6 +1,6 @@
 {
   "name": "@keqingrong/web-apis",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Web APIs",
   "author": "Qingrong Ke <keqingrong@outlook.com> (https://keqingrong.github.io/)",
   "license": "MIT",
@@ -27,10 +27,10 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build",
+    "build": "tsdx build --format cjs,esm,umd",
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint src test",
-    "prepare": "tsdx build",
+    "prepare": "npm run build",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
