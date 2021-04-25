@@ -54,22 +54,40 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
   - `saveJSON()`
   - `saveText()`
 - Internal Utils
-  - `arrayBufferToBase64()`
-  - `base64ToTypedArray()`
-  - `base64ToArrayBuffer()`
-  - `base64ToBlob()`
-  - `blobToArrayBuffer()`/`readAsArrayBuffer()`
-  - `blobToDataURL()`/`readAsDataURL()`
-  - `blobToText()`/`readAsText()`
-  - `latin1ToTypedArray()`
-  - `utf16ToTypedArray()`
-  - `stringToTypedArray()`
-  - `arrayBufferToString()`
-  - `pareseDataURL()`
-  - `dataURLToArrayBuffer()`
-  - `dataURLToBlob()`
-  - `dataURLToImageData()`
-  - `imageToBlob()`
+  - Base64
+    - `arrayBufferToBase64()`
+    - `base64ToTypedArray()`
+    - `base64ToArrayBuffer()`
+    - `base64ToBlob()`
+  - Blob
+    - `blobToArrayBuffer()`/`readAsArrayBuffer()`
+    - `blobToDataURL()`/`readAsDataURL()`
+    - `blobToText()`/`readAsText()`
+    - `latin1ToTypedArray()`
+    - `utf16ToTypedArray()`
+    - `stringToTypedArray()`
+    - `arrayBufferToString()`
+  - Data URL
+    - `pareseDataURL()`
+    - `dataURLToArrayBuffer()`
+    - `dataURLToBlob()`
+    - `dataURLToImageData()`
+  - Image
+    - `imageToBlob()`
+  - URL
+    - `isHttpURL()`
+    - `isDataURL()`
+    - `isHttps()`
+    - `httpsToHttp()`
+    - `parseURL()`
+    - `parseScheme()`
+    - `getSubdomain()`
+    - `isSameOrigin()`
+    - `isCorssOrigin()`
+    - `isSameSite()`
+    - `isCrossSite()`
+    - `isSchemefulSameSite()`
+    - `isSchemefulCrossSite()`
 
 ## License
 
