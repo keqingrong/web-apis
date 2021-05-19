@@ -40,7 +40,7 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
   - Image
     - `getImageInfo()`
     - `getBaseImageInfo()`
-    - `compressImage()`
+    - `compressImage()` (WIP)
     - `chooseImage()`
     - `chooseImageFile()`
     - `chooseImageDataURL()`
@@ -51,6 +51,7 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
   - `navigateTo()`
 - File
   - `saveFile()`
+  - `saveImage()`
   - `saveJSON()`
   - `saveText()`
 - Internal Utils
