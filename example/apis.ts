@@ -3,6 +3,7 @@ import {
   getImageInfo,
   makePhoneCall,
   saveFile,
+  saveImage,
   saveJSON,
   saveText
 } from '../src';
@@ -57,12 +58,12 @@ export const apis: [string, ApiHandler][] = [
         ctx.arc(100, 100, 50, 0, 2 * Math.PI);
         ctx.fillStyle = '#f60';
         ctx.fill();
-  
+
         // save canvas as PNG image
         // canvas.toBlob(blob => {
         //   blob && saveFile(blob, 'circle.png');
         // });
-  
+
         // or sava it as JPEG image
         canvas.toBlob(
           blob => {
@@ -71,6 +72,23 @@ export const apis: [string, ApiHandler][] = [
           'image/jpeg',
           1
         );
+      }
+    }
+  ],
+  [
+    'saveImage (Canvas)',
+    () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 200;
+      canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.beginPath();
+        ctx.arc(100, 100, 50, 0, 2 * Math.PI);
+        ctx.fillStyle = '#f60';
+        ctx.fill();
+
+        saveImage(canvas, 'circle.png');
       }
     }
   ],
