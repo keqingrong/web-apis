@@ -86,6 +86,7 @@ export async function saveImage(
       image = createCanvas(element);
     }
   }
+  // TODO: 支持设置 mediaType 和 quality
   const blob = await imageToBlob(image);
   if (blob === null) {
     throw new Error('无法转换成 Blob 对象');

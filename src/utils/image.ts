@@ -13,12 +13,18 @@ export function createCanvas(image: HTMLImageElement) {
 /**
  * 将图片处理成 Blob 对象
  * @param {HTMLImageElement | HTMLCanvasElement} element 图片元素
+ * @param {string} type 媒体类型，默认 `image/png`
+ * @param {number} quality 图片质量，[0, 1] 数字
  * @returns {Promise<Blob|null>}
  */
-export function imageToBlob(element: HTMLImageElement | HTMLCanvasElement) {
+export function imageToBlob(
+  element: HTMLImageElement | HTMLCanvasElement,
+  type?: string,
+  quality?: number
+) {
   const image =
     element instanceof HTMLImageElement ? createCanvas(element) : element;
   return new Promise<Blob | null>(resolve => {
-    image.toBlob(blob => resolve(blob));
+    image.toBlob(blob => resolve(blob), type, quality);
   });
 }
