@@ -49,7 +49,7 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
       () => {
         // 结束后释放 URL 对象，但如果立即调用 revokeObjectURL 会导致网络错误。
         // 如 Chrome 会提示 "Failed - Network error"，此处放在回调函数中异步处理。
-        requestAnimationFrame(() => {
+        setTimeout(() => {
           URL.revokeObjectURL(link.href);
           link.remove();
         });
