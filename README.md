@@ -51,6 +51,7 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
   - `navigateTo()`
 - File
   - `saveFile()`
+  - `saveFileOrDataURL()`
   - `saveImage()`
   - `saveJSON()`
   - `saveText()`
@@ -60,6 +61,8 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
     - `base64ToTypedArray()`
     - `base64ToArrayBuffer()`
     - `base64ToBlob()`
+    - `toBase64()`
+    - `fromBase64()`
   - Blob
     - `blobToArrayBuffer()`/`readAsArrayBuffer()`
     - `blobToDataURL()`/`readAsDataURL()`
@@ -75,6 +78,7 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
     - `dataURLToImageData()`
   - Image
     - `imageToBlob()`
+    - `imageToDataURL()`
   - URL
     - `isHttpURL()`
     - `isDataURL()`
