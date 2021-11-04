@@ -28,3 +28,20 @@ export function imageToBlob(
     image.toBlob(blob => resolve(blob), type, quality);
   });
 }
+
+/**
+ * 将图片处理成 DataURL
+ * @param {HTMLImageElement | HTMLCanvasElement} element 图片元素
+ * @param {string} type 媒体类型，默认 `image/png`
+ * @param {number} quality 图片质量，[0, 1] 数字
+ * @returns {string}
+ */
+export function imageToDataURL(
+  element: HTMLImageElement | HTMLCanvasElement,
+  type?: string,
+  quality?: number
+) {
+  const image =
+    element instanceof HTMLImageElement ? createCanvas(element) : element;
+  return image.toDataURL(type, quality);
+}

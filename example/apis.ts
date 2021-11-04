@@ -43,7 +43,7 @@ export const apis: [string, ApiHandler][] = [
   <circle cx="50" cy="50" r="40" stroke-width="1" fill="#f60" />
 </svg>`;
       const blob = new Blob([str], { type: 'image/svg+xml' });
-      saveFile(blob, 'circle.svg');
+      saveFile(blob, 'circle.svg').then(console.log);
     }
   ],
   [
@@ -67,11 +67,11 @@ export const apis: [string, ApiHandler][] = [
         // or sava it as JPEG image
         canvas.toBlob(
           blob => {
-            blob && saveFile(blob, 'circle.jpg');
+            blob && saveFile(blob, 'circle.jpg').then(console.log);
           },
           'image/jpeg',
           1
-        );
+        )
       }
     }
   ],
@@ -88,7 +88,7 @@ export const apis: [string, ApiHandler][] = [
         ctx.fillStyle = '#f60';
         ctx.fill();
 
-        saveImage(canvas, 'circle.png');
+        saveImage(canvas, 'circle.png').then(console.log);
       }
     }
   ],
@@ -99,7 +99,7 @@ export const apis: [string, ApiHandler][] = [
 Lorem ipsum dolor sit amet
 Consectetur adipiscing elit
 `;
-      saveText(str, 'README.md');
+      saveText(str, 'README.md').then(console.log);
     }
   ],
   [
@@ -112,7 +112,7 @@ Consectetur adipiscing elit
         obj: {
           foo: 'bar'
         }
-      });
+      }).then(console.log);
     }
   ]
 ];

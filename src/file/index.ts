@@ -1,7 +1,14 @@
 import { downloadFile } from '../network/download';
-import { createCanvas, imageToBlob } from '../utils/image';
+import { createCanvas, imageToBlob, imageToDataURL } from '../utils/image';
 import { basename } from '../utils/path';
-import { isHttpURL } from '../utils/url';
+import { isHttpURL, isDataURL } from '../utils/url';
+
+declare global {
+  interface Navigator {
+    msSaveBlob?(blob: Blob, defaultName: string): void;
+    msSaveOrOpenBlob?(blob: Blob, defaultName: string): void;
+  }
+}
 
 /**
  * 保存文件到本地
@@ -12,37 +19,63 @@ import { isHttpURL } from '../utils/url';
 export async function saveFile(src: string | File | Blob, filename?: string) {
   let defaultName = filename ?? '';
   let file: File | Blob | null = null;
+
   if (typeof src === 'string') {
-    if (!isHttpURL(src)) {
+    if (isHttpURL(src)) {
+      if (defaultName.length === 0) {
+        defaultName = basename(src);
+      }
+      file = await downloadFile(src);
+    } else if (isDataURL(src)) {
+      return await saveFileOrDataURL(src);
+    } else {
       throw new Error(
         `第一个参数为 URL 或文件对象，若要保存文件内容，请使用 saveText API`
       );
     }
-    if (defaultName.length === 0) {
-      defaultName = basename(src);
-    }
-    file = await downloadFile(src);
-  } else if (src instanceof File) {
-    if (defaultName.length === 0) {
-      defaultName = src.name;
-    }
-    file = src;
   } else {
+    file = src
+  }
+
+  if (file === null) {
+    return false;
+  }
+
+  return await saveFileOrDataURL(src, defaultName);
+}
+
+/**
+ * 保存文件或 DataURL 到本地
+ * @param {string | File | Blob} src 文件或 DataURL
+ * @param {string} filename 文件名
+ * @returns {Promise<boolean>}
+ */
+export async function saveFileOrDataURL(
+  src: string | File | Blob,
+  filename?: string
+) {
+  let defaultName = filename ?? '';
+  let file: File | Blob | null = null;
+
+  if (src instanceof File || src instanceof Blob) {
     if (defaultName.length === 0) {
-      defaultName = new Date().getTime().toString(10);
+      defaultName =
+        'name' in src ? src.name : new Date().getTime().toString(10);
     }
     file = src;
   }
 
   // Microsoft Edge/IE 10+
-  if (navigator.msSaveOrOpenBlob) {
+  if (navigator.msSaveOrOpenBlob && file) {
     navigator.msSaveOrOpenBlob(file, defaultName);
     return true;
   }
 
+  const dataURL = typeof src === 'string' ? src : URL.createObjectURL(file);
+
   if (typeof URL !== 'undefined' && 'download' in HTMLAnchorElement.prototype) {
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(file);
+    link.href = dataURL;
     link.download = defaultName;
     link.addEventListener(
       'click',
@@ -50,7 +83,9 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
         // 结束后释放 URL 对象，但如果立即调用 revokeObjectURL 会导致网络错误。
         // 如 Chrome 会提示 "Failed - Network error"，此处放在回调函数中异步处理。
         setTimeout(() => {
-          URL.revokeObjectURL(link.href);
+          if (file) {
+            URL.revokeObjectURL(link.href);
+          }
           link.remove();
         });
       },
@@ -87,6 +122,11 @@ export async function saveImage(
     }
   }
   // TODO: 支持设置 mediaType 和 quality
+  // TODO: `imageToDataURL` 和 `imageToBlob` 哪个性能更好？
+  const dataURL = imageToDataURL(image);
+  if (dataURL.length > 0) {
+    return saveFileOrDataURL(dataURL, filename);
+  }
   const blob = await imageToBlob(image);
   if (blob === null) {
     throw new Error('无法转换成 Blob 对象');
