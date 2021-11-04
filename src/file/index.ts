@@ -1,5 +1,5 @@
 import { downloadFile } from '../network/download';
-import { createCanvas, imageToBlob, imageToDataURL } from '../utils/image';
+import { imageToBlob, imageToDataURL } from '../utils/image';
 import { basename } from '../utils/path';
 import { isHttpURL, isDataURL } from '../utils/url';
 
@@ -107,11 +107,15 @@ export async function saveFileOrDataURL(
  * 保存图片到本地
  * @param {HTMLImageElement | HTMLCanvasElement} element 图片元素
  * @param {string} filename 文件名
+ * @param {string} type 媒体类型，默认 `image/png`
+ * @param {number} quality 图片质量，[0, 1] 数字
  * @returns {Promise<boolean>}
  */
 export async function saveImage(
   element: HTMLImageElement | HTMLCanvasElement,
-  filename?: string
+  filename?: string,
+  type?: string,
+  quality?: number
 ) {
   let image = element;
   if (element instanceof HTMLImageElement) {
@@ -121,10 +125,9 @@ export async function saveImage(
       // 忽略
     }
   }
-  // TODO: 支持设置 mediaType 和 quality
-  const blob = await imageToBlob(image);
+  const blob = await imageToBlob(image, type, quality);
   if (blob === null) {
-    const dataURL = imageToDataURL(image);
+    const dataURL = imageToDataURL(image, type, quality);
     if (dataURL.length > 0) {
       return await saveFileOrDataURL(dataURL, filename);
     }
@@ -170,7 +173,7 @@ export async function saveJSON(
   // TODO: 优化类型定义
   const content = JSON.stringify(json, replacer as any, spaces) + EOL;
   const blob = new Blob([content], { type: 'application/json' });
-  return saveFile(blob, filename);
+  return saveFileOrDataURL(blob, filename);
 }
 
 /**
@@ -181,5 +184,5 @@ export async function saveJSON(
  */
 export async function saveText(content: string, filename?: string) {
   const blob = new Blob([content], { type: 'application/octet-stream' });
-  return saveFile(blob, filename);
+  return saveFileOrDataURL(blob, filename);
 }
