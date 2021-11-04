@@ -34,7 +34,7 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
       );
     }
   } else {
-    file = src
+    file = src;
   }
 
   if (file === null) {
@@ -118,20 +118,19 @@ export async function saveImage(
     try {
       return await saveFile(element.src, filename);
     } catch (err) {
-      image = createCanvas(element);
+      // 忽略
     }
   }
   // TODO: 支持设置 mediaType 和 quality
-  // TODO: `imageToDataURL` 和 `imageToBlob` 哪个性能更好？
-  const dataURL = imageToDataURL(image);
-  if (dataURL.length > 0) {
-    return saveFileOrDataURL(dataURL, filename);
-  }
   const blob = await imageToBlob(image);
   if (blob === null) {
+    const dataURL = imageToDataURL(image);
+    if (dataURL.length > 0) {
+      return await saveFileOrDataURL(dataURL, filename);
+    }
     throw new Error('无法转换成 Blob 对象');
   }
-  return saveFile(blob, filename);
+  return await saveFileOrDataURL(blob, filename);
 }
 
 export type JSONValue =
