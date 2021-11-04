@@ -84,7 +84,7 @@ export async function saveFileOrDataURL(
         // 如 Chrome 会提示 "Failed - Network error"，此处放在回调函数中异步处理。
         setTimeout(() => {
           if (file) {
-            URL.revokeObjectURL(link.href);
+            URL.revokeObjectURL(dataURL);
           }
           link.remove();
         });
