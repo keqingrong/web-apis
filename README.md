@@ -38,9 +38,8 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
     - `makePhoneCall()`
 - Media
   - Image
-    - `getImageInfo()`
+    - `getImageInfo()` (WIP)
     - `getBaseImageInfo()`
-    - `compressImage()` (WIP)
     - `chooseImage()`
     - `chooseImageFile()`
     - `chooseImageDataURL()`
@@ -51,7 +50,6 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
   - `navigateTo()`
 - File
   - `saveFile()`
-  - `saveFileOrDataURL()`
   - `saveImage()`
   - `saveJSON()`
   - `saveText()`
@@ -76,13 +74,17 @@ import { chooseImage, getImageInfo } from '@keqingrong/web-apis';
     - `dataURLToArrayBuffer()`
     - `dataURLToBlob()`
     - `dataURLToImageData()`
+  - Download
+    - `saveBlobOrURL()`
+    - `downloadFile()`
   - Image
     - `imageToBlob()`
     - `imageToDataURL()`
   - URL
     - `isHttpURL()`
+    - `isHttpsURL()`
     - `isDataURL()`
-    - `isHttps()`
+    - `isBlobURL()`
     - `httpsToHttp()`
     - `parseURL()`
     - `parseScheme()`
