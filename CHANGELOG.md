@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v0.5.0 (2021-11-05)
+
+1. `saveFile` add support for Blob URL and Data URL
+2. `saveImage` add support for format type and quality
+3. Add `toBase64` and `fromBase64`
+4. Fix wrong image media type in `getBaseImageInfo`
+
 ## v0.4.0 (2021-04-25)
 
 1. Add new utilities
