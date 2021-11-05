@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Modal } from 'antd-mobile';
+import Modal from 'antd-mobile/es/modal';
 
 const alertModal = (title: React.ReactNode, message: React.ReactNode) => {
   Modal.alert(title, <div style={{ wordBreak: 'break-all' }}>{message}</div>);

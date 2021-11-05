@@ -1,7 +1,6 @@
 {
   "name": "example",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html",
@@ -9,8 +8,7 @@
   },
   "dependencies": {
     "antd-mobile": "^2.3.4",
-    "eruda": "^2.4.1",
-    "react-app-polyfill": "^1.0.0"
+    "eruda": "^2.4.1"
   },
   "alias": {
     "react": "../node_modules/react",
@@ -18,12 +16,21 @@
     "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"
   },
   "devDependencies": {
+    "@parcel/config-default": "^2.0.0",
+    "@parcel/transformer-typescript-tsc": "^2.0.0",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.8.4",
-    "parcel": "^1.12.3",
-    "typescript": "^3.4.5"
+    "parcel": "^2.0.0",
+    "typescript": "^4.4.4"
   },
-  "resolutions": {
-    "@babel/preset-env": "7.13.8"
+  "browserslist": [
+    "iOS >= 9",
+    "ChromeAndroid >= 55",
+    "Chrome >= 55"
+  ],
+  "targets": {
+    "default": {
+      "publicUrl": "./"
+    }
   }
 }

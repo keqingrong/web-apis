@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { NavBar, List } from 'antd-mobile';
+import NavBar from 'antd-mobile/es/nav-bar';
+import List from 'antd-mobile/es/list';
 import { apis } from './apis';
 import 'antd-mobile/dist/antd-mobile.css';
 
