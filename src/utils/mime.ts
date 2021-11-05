@@ -170,6 +170,8 @@ export async function checkMime(blob: Blob): Promise<MimePattern | undefined> {
  * 根据图片后缀返回对应媒体类型
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
  * @param ext
+ * @example
+ * '.png' -> 'image/png'
  */
 export function extToMediaType(ext: string): string {
   // mage/vnd.microsoft.icon,image/jpeg,image/svg+xml,image/tiff

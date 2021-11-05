@@ -5,10 +5,11 @@ import {
   ChooseImageFileOptions,
   InputEventTarget
 } from '../../types';
-import { downloadFile } from '../../network/download';
+import { downloadFile } from '../../utils/download';
 import { extToMediaType } from '../../utils/mime';
 import { readAsDataURL } from '../../utils/blob';
 import { isiOS } from '../../utils/ua';
+import { extname } from '../../utils/path';
 
 /**
  * 选择图片，返回URL字符串数组
@@ -130,7 +131,7 @@ export function chooseImageDataURL(options: ChooseImageFileOptions = {}) {
 export function getBaseImageInfo(src: string): Promise<BaseImageInfo> {
   return new Promise<BaseImageInfo>(resolve => {
     const img = document.createElement('img');
-    const ext = src.slice(src.lastIndexOf('.') + 1);
+    const ext = extname(src);
     const mediaType = extToMediaType(ext);
     img.src = src;
     img.onload = () => {

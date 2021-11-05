@@ -19,6 +19,7 @@ export function basename(path: string, ext: string = '') {
 /**
  * 获取文件后缀名
  * @param path
+ * @see https://nodejs.org/dist/latest/docs/api/path.html#pathextnamepath
  * @example
  * extname('index.html')
  * // '.html'
