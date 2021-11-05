@@ -1,7 +1,7 @@
-import { imageToBlob, imageToDataURL } from '../utils/image';
 import { basename } from '../utils/path';
-import { isHttpURL, isDataURL, isBlobURL, isSameOrigin } from '../utils/url';
+import { isHttpURL, isDataURL, isBlobURL } from '../utils/url';
 import { saveBlobOrURL, downloadFile } from '../utils/download';
+import { imageToBlob, imageToDataURL } from '../utils/image';
 
 /**
  * 保存文件到本地
@@ -19,12 +19,10 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
         defaultName = basename(src);
       }
 
-      if (isSameOrigin(window.location, src)) {
-        try {
-          return await saveBlobOrURL(src, defaultName);
-        } catch (err) {
-          // 忽略
-        }
+      try {
+        return await saveBlobOrURL(src, defaultName);
+      } catch (err) {
+        // 忽略
       }
 
       file = await downloadFile(src);
