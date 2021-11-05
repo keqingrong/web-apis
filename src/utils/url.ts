@@ -1,11 +1,4 @@
 /**
- * 判断是否是 HTTP(S) URL
- */
-export function isHttpURL(url: string) {
-  return /^https?:/.test(url);
-}
-
-/**
  * 判断是否是 Data URL
  * "data:image/jpeg;base64,"
  */
@@ -14,10 +7,25 @@ export function isDataURL(url: string) {
 }
 
 /**
+ * 判断是否是 Blob URL
+ * "blob:http://localhost/cc29c87c-3555-4782-abd1-3fc756eabcb5"
+ */
+export function isBlobURL(url: string) {
+  return /^blob:/.test(url);
+}
+
+/**
+ * 判断是否是 HTTP(S) URL
+ */
+export function isHttpURL(url: string) {
+  return /^https?:/.test(url);
+}
+
+/**
  * 判断是否是 HTTPS URL
  * @param url
  */
-export function isHttps(url: string) {
+export function isHttpsURL(url: string) {
   return /^https/.test(url);
 }
 
@@ -91,10 +99,7 @@ export const getSubdomain = (url: string | URL | Location) => {
   const sliceIndex = suffixList.some(suffix => hostname.endsWith(suffix))
     ? -3
     : -2;
-  return hostname
-    .split('.')
-    .slice(sliceIndex)
-    .join('.');
+  return hostname.split('.').slice(sliceIndex).join('.');
 };
 
 /**

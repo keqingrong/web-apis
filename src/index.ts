@@ -8,6 +8,7 @@ export * from './route';
 export * from './utils/base64';
 export * from './utils/blob';
 export * from './utils/dataurl';
+export { saveBlobOrURL } from './utils/download';
 export * from './utils/image';
 export * from './utils/mime';
 export * from './utils/path';

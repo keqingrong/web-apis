@@ -1,14 +1,7 @@
-import { downloadFile } from '../network/download';
 import { imageToBlob, imageToDataURL } from '../utils/image';
 import { basename } from '../utils/path';
-import { isHttpURL, isDataURL } from '../utils/url';
-
-declare global {
-  interface Navigator {
-    msSaveBlob?(blob: Blob, defaultName: string): void;
-    msSaveOrOpenBlob?(blob: Blob, defaultName: string): void;
-  }
-}
+import { isHttpURL, isDataURL, isBlobURL, isSameOrigin } from '../utils/url';
+import { saveBlobOrURL, downloadFile } from '../utils/download';
 
 /**
  * 保存文件到本地
@@ -25,9 +18,18 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
       if (defaultName.length === 0) {
         defaultName = basename(src);
       }
+
+      if (isSameOrigin(window.location, src)) {
+        try {
+          return await saveBlobOrURL(src, defaultName);
+        } catch (err) {
+          // 忽略
+        }
+      }
+
       file = await downloadFile(src);
-    } else if (isDataURL(src)) {
-      return await saveFileOrDataURL(src);
+    } else if (isDataURL(src) || isBlobURL(src)) {
+      return await saveBlobOrURL(src, defaultName);
     } else {
       throw new Error(
         `第一个参数为 URL 或文件对象，若要保存文件内容，请使用 saveText API`
@@ -41,66 +43,7 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
     return false;
   }
 
-  return await saveFileOrDataURL(src, defaultName);
-}
-
-/**
- * 保存文件或 DataURL 到本地
- * @param {string | File | Blob} src 文件或 DataURL
- * @param {string} filename 文件名
- * @returns {Promise<boolean>}
- */
-export async function saveFileOrDataURL(
-  src: string | File | Blob,
-  filename?: string
-) {
-  let defaultName = filename ?? '';
-  let file: File | Blob | null = null;
-
-  if (src instanceof File || src instanceof Blob) {
-    if (defaultName.length === 0) {
-      defaultName =
-        'name' in src ? src.name : new Date().getTime().toString(10);
-    }
-    file = src;
-  }
-
-  // Microsoft Edge/IE 10+
-  if (navigator.msSaveOrOpenBlob && file) {
-    navigator.msSaveOrOpenBlob(file, defaultName);
-    return true;
-  }
-
-  const dataURL = typeof src === 'string' ? src : URL.createObjectURL(file);
-
-  if (typeof URL !== 'undefined' && 'download' in HTMLAnchorElement.prototype) {
-    const link = document.createElement('a');
-    link.href = dataURL;
-    link.download = defaultName;
-    link.addEventListener(
-      'click',
-      () => {
-        // 结束后释放 URL 对象，但如果立即调用 revokeObjectURL 会导致网络错误。
-        // 如 Chrome 会提示 "Failed - Network error"，此处放在回调函数中异步处理。
-        setTimeout(() => {
-          if (file) {
-            URL.revokeObjectURL(dataURL);
-          }
-          link.remove();
-        });
-      },
-      false
-    );
-
-    // 没有必要调用 document.body.appendChild() 将 link 元素真的添加到页面中。
-    // 因为没有添加到页面中，此处调用 link.click() 对 Firefox 来说不会触发下载，
-    // 使用 link.dispatchEvent() 代替。
-    link.dispatchEvent(new MouseEvent('click'));
-    return true;
-  }
-
-  // 不支持 IE9 等低版本浏览器和 Safari for iOS、Chrome for iOS 等 iOS 平台浏览器
-  throw new Error('该浏览器不支持文件保存');
+  return await saveBlobOrURL(file, defaultName);
 }
 
 /**
@@ -126,14 +69,14 @@ export async function saveImage(
     }
   }
   const blob = await imageToBlob(image, type, quality);
-  if (blob === null) {
-    const dataURL = imageToDataURL(image, type, quality);
-    if (dataURL.length > 0) {
-      return await saveFileOrDataURL(dataURL, filename);
-    }
-    throw new Error('无法转换成 Blob 对象');
+  if (blob !== null) {
+    return await saveBlobOrURL(blob, filename);
   }
-  return await saveFileOrDataURL(blob, filename);
+  const dataURL = imageToDataURL(image, type, quality);
+  if (dataURL.length > 0) {
+    return await saveBlobOrURL(dataURL, filename);
+  }
+  throw new Error('无法转换成 Blob 对象');
 }
 
 export type JSONValue =
@@ -173,7 +116,7 @@ export async function saveJSON(
   // TODO: 优化类型定义
   const content = JSON.stringify(json, replacer as any, spaces) + EOL;
   const blob = new Blob([content], { type: 'application/json' });
-  return saveFileOrDataURL(blob, filename);
+  return saveBlobOrURL(blob, filename);
 }
 
 /**
@@ -184,5 +127,5 @@ export async function saveJSON(
  */
 export async function saveText(content: string, filename?: string) {
   const blob = new Blob([content], { type: 'application/octet-stream' });
-  return saveFileOrDataURL(blob, filename);
+  return saveBlobOrURL(blob, filename);
 }
