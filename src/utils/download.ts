@@ -38,12 +38,11 @@ export async function saveBlobOrURL(
     return true;
   }
 
-  // Data URL or Blob URL
-  const downloadURL = typeof src === 'string' ? src : URL.createObjectURL(file);
-
   if (typeof URL !== 'undefined' && 'download' in HTMLAnchorElement.prototype) {
+    // Data URL or Blob URL
+    const url = typeof src === 'string' ? src : URL.createObjectURL(file);
     const link = document.createElement('a');
-    link.href = downloadURL;
+    link.href = url;
     link.download = defaultName;
     link.addEventListener(
       'click',
@@ -51,8 +50,8 @@ export async function saveBlobOrURL(
         // 结束后释放 URL 对象，但如果立即调用 revokeObjectURL 会导致网络错误。
         // 如 Chrome 会提示 "Failed - Network error"，此处放在回调函数中异步处理。
         setTimeout(() => {
-          if (isBlobURL(downloadURL)) {
-            URL.revokeObjectURL(downloadURL);
+          if (isBlobURL(url)) {
+            URL.revokeObjectURL(url);
           }
           link.remove();
         });
