@@ -7,7 +7,6 @@ import { imageToBlob, imageToDataURL } from '../utils/image';
  * 保存文件到本地
  * @param {string | File | Blob} src URL 或文件对象
  * @param {string} filename 文件名
- * @returns {Promise<boolean>}
  */
 export async function saveFile(src: string | File | Blob, filename?: string) {
   let defaultName = filename ?? '';
@@ -50,7 +49,6 @@ export async function saveFile(src: string | File | Blob, filename?: string) {
  * @param {string} filename 文件名
  * @param {string} type 媒体类型，默认 `image/png`
  * @param {number} quality 图片质量，[0, 1] 数字
- * @returns {Promise<boolean>}
  */
 export async function saveImage(
   element: HTMLImageElement | HTMLCanvasElement,
@@ -103,7 +101,6 @@ export interface SaveJSONOptions {
  * 保存 JSON 内容到本地
  * @param {any} json JSON 对象
  * @param {string} filename 文件名
- * @returns {Promise<boolean>}
  */
 export async function saveJSON(
   json: any,
@@ -121,7 +118,6 @@ export async function saveJSON(
  * 保存文本内容到本地
  * @param {string} content 文本内容
  * @param {string} filename 文件名
- * @returns {Promise<boolean>}
  */
 export async function saveText(content: string, filename?: string) {
   const blob = new Blob([content], { type: 'application/octet-stream' });

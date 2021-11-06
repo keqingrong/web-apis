@@ -11,7 +11,6 @@ declare global {
  * 保存文件或 URL 资源到本地
  * @param {string | File | Blob} src 文件对象或 URL（同源 URL 或 Blob URL 或 Data URL）
  * @param {string} filename 文件名
- * @returns {Promise<boolean>}
  */
 export async function saveBlobOrURL(
   src: string | File | Blob,
@@ -39,7 +38,6 @@ export async function saveBlobOrURL(
   }
 
   if (typeof URL !== 'undefined' && 'download' in HTMLAnchorElement.prototype) {
-    // Data URL or Blob URL
     const url = typeof src === 'string' ? src : URL.createObjectURL(file);
     const link = document.createElement('a');
     link.href = url;

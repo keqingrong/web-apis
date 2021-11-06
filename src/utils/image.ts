@@ -15,7 +15,6 @@ export function createCanvas(image: HTMLImageElement) {
  * @param {HTMLImageElement | HTMLCanvasElement} element 图片元素
  * @param {string} type 媒体类型，默认 `image/png`
  * @param {number} quality 图片质量，[0, 1] 数字
- * @returns {Promise<Blob|null>}
  */
 export function imageToBlob(
   element: HTMLImageElement | HTMLCanvasElement,
@@ -34,7 +33,6 @@ export function imageToBlob(
  * @param {HTMLImageElement | HTMLCanvasElement} element 图片元素
  * @param {string} type 媒体类型，默认 `image/png`
  * @param {number} quality 图片质量，[0, 1] 数字
- * @returns {string}
  */
 export function imageToDataURL(
   element: HTMLImageElement | HTMLCanvasElement,

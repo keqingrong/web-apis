@@ -74,7 +74,7 @@ export function dataURLToBlob(url: string) {
 /**
  * 将 Data URL 转换成 Blob 对象
  */
-export function dataURLToBlobAsync(url: string) {
+export async function dataURLToBlobAsync(url: string) {
   return window.fetch(url).then(res => res.blob());
 }
 

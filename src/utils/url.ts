@@ -39,7 +39,6 @@ export function httpsToHttp(url: string) {
 /**
  * 解析 URL 字符串
  * @param {string} s - URL string
- * @returns {URL|null}
  */
 export function parseURL(s: string) {
   let url: URL | null = null;
@@ -136,7 +135,6 @@ export function isSameOrigin(
  * 判断两个 URL 是否属于 cross-origin
  * @param url1
  * @param url2
- * @returns
  */
 export function isCorssOrigin(
   url1: string | URL | Location,
